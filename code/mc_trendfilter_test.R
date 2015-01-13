@@ -25,7 +25,7 @@ library(doMC)
 
 registerDoMC(10)
 
-niter = 40
+niter = 100
 
 n_ls = c(300, 600, 900, 1200, 1800)
 s0_ls = c(3)
