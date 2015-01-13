@@ -81,7 +81,7 @@ for (ii in 1:length(s0_ls)){
         }
 
         results[ii,jj,kk] = mean(unlist(risks))
-        save(results, file="Res.RData")
+        save(results, file="Res2.RData")
         
     }
 
