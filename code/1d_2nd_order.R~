@@ -1,0 +1,115 @@
+#Create the matrix mat which plays the role of
+#design matrix X in the Lasso formulation.
+isomat2 = function(n){
+
+    X = matrix(0, n, n)
+    X[lower.tri(X, diag=TRUE)] = 1
+
+    X = X %*% X
+
+    X = (1/n) * X
+    X[, 1] = 1
+    return(X)
+}
+
+isomat1 = function(n){
+
+    X = matrix(0, n, n)
+    X[lower.tri(X, diag=TRUE)] = 1
+    return(X)
+}
+
+
+library(glmnet)
+
+niter = 30
+
+n_ls = c(450, 600, 900, 1200)
+s0_ls = c(4)
+
+results = matrix(0, length(s0_ls), length(n_ls))
+fstar.norms = matrix(0, length(s0_ls), length(n_ls))
+beta.stats = matrix(0, length(s0_ls), length(n_ls))
+
+for (ii in 1:length(s0_ls)){
+    for (jj in 1:length(n_ls)){
+
+        risk = 0
+        fstar.norm = 0
+        beta.stat = 0
+
+        for (it in 1:niter){
+    
+            print(c(it, ii, jj));
+    
+            n = n_ls[jj]
+            ##n = 400
+            X = isomat2(n)
+            s0 = s0_ls[ii]
+            ##s0 = 3
+            c = 5
+            sigma = .1
+            betastar = rep(0, n);
+            delta = floor(n/s0)
+            ixs = (0:s0)*delta
+            ixs[1] = 1
+            ixs = ixs[-(s0+1)]
+            ##
+            betastar[ixs] = 1
+            betastar[ixs] = betastar[ixs] * ((-1)^(1:s0))
+            ##betastar[ixs] = sign(runif(n=s0)-0.5)
+            betastar = c*betastar/sum(abs(betastar))
+            ##betastar[ixs] = 0
+            epsilon = rnorm(n, 0, sigma)
+            
+            lambda = 0.05*sigma*(log(n)/n)^(2/3)
+            fstar = X %*% betastar
+            fstar = fstar - mean(fstar)
+            y = fstar + epsilon
+            ##
+            ##
+
+            glmfit = glmnet(x=X, y=y, lambda=lambda, standardize=FALSE,
+                family="gaussian", thresh=1e-8, maxit=200000)
+            betahat = as.vector(glmfit$beta)
+            
+            fhat1 = X %*% betahat
+            fhat1 = fhat1 - mean(fhat1)
+
+            #fhat2 = l1tf(x=y, lambda=n*n*lambda)
+
+            ##resid = X %*% (betastar - betahat)
+            ##risk = risk + (1/n)*sum(resid^2)
+           
+            risk = risk + (100/n)*sum( (fstar - fhat1)^2)
+            ##fstar.norm = fstar.norm +(100/n)* sum(fstar^2)
+            fstar.norm = fstar.norm + (100/n)*sum(fstar^2)
+            beta.stat = beta.stat + (sum(betahat < 0) == 0)
+        }
+
+        risk = risk/niter
+        fstar.norm = fstar.norm/niter
+        beta.stat = beta.stat/niter
+        
+        results[ii,jj] = risk
+        fstar.norms[ii,jj] = fstar.norm
+        beta.stats[ii,jj] = beta.stat
+
+    }
+}
+
+
+
+## n=600
+## p=200
+## sigma=0.5
+## X = matrix(rnorm(n*p), n, p)
+## betastar = rep(0, p)
+## betastar[1] = 1
+## betastar = as.matrix(betastar)
+## y = X %*% betastar + rnorm(n, sigma)
+## glmfit = glmnet(x=X, y=y, lambda=sigma*sqrt(log(p)/n))
+## betahat = glmfit$beta
+## norm(betahat - betastar)
+## norm(betastar)
+## norm(X %*% (betahat - betastar))
