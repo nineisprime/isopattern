@@ -23,7 +23,7 @@ isomat1 = function(n){
 library(glmnet)
 library(doMC)
 
-registerDoMC(10)
+registerDoMC(4)
 
 niter = 40
 
@@ -46,7 +46,7 @@ for (ii in 1:length(s0_ls)){
             X = isomat1(n)
             s0 = s0_ls[ii]
             ##s0 = 3
-            c = 2
+            c = 1
             sigma = 0.2
             betastar = rep(0, n);
             delta = floor(n/s0)
@@ -62,7 +62,7 @@ for (ii in 1:length(s0_ls)){
             epsilon = rnorm(n, 0, sigma)
 
             #const = 0.02
-            const = lambda_ls[kk]
+            const = 0.2
             lambda = const*sigma*(log(n)/n)^(1/2)
             fstar = X %*% betastar
             fstar = fstar - mean(fstar)

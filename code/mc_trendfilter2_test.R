@@ -43,7 +43,7 @@ for (ii in 1:length(s0_ls)){
     
             n = n_ls[jj]
             ##n = 400
-            X = isomat1(n)
+            X = isomat2(n)
             s0 = s0_ls[ii]
             ##s0 = 3
             c = 2
@@ -63,7 +63,7 @@ for (ii in 1:length(s0_ls)){
 
             #const = 0.02
             const = lambda_ls[kk]
-            lambda = const*sigma*(log(n)/n)^(1/2)
+            lambda = const*sigma*(log(n)/n)^(2/3)
             fstar = X %*% betastar
             fstar = fstar - mean(fstar)
             y = fstar + epsilon
