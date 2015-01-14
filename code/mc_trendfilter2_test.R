@@ -27,7 +27,7 @@ registerDoMC(10)
 
 niter = 100
 
-n_ls = c(300, 600, 900, 1200, 1800, 2400)
+n_ls = c(300, 600, 900, 1200, 1500, 1800, 2100)
 s0_ls = c(3)
 lambda_ls = c(0.001, 0.005, 0.007, 0.01, 0.02, 0.05, 0.1, 0.15, 0.2, 0.4, 0.6, 0.8, 1)
 
@@ -46,7 +46,7 @@ for (ii in 1:length(s0_ls)){
             X = isomat2(n)
             s0 = s0_ls[ii]
             ##s0 = 3
-            c = 5
+            c = 6
             sigma = 0.1
             betastar = rep(0, n);
             delta = floor(n/s0)
@@ -55,7 +55,7 @@ for (ii in 1:length(s0_ls)){
             ixs = ixs[-(s0+1)]
             ##
             betastar[ixs] = 1
-            betastar[ixs] = betastar[ixs] * ((-1)^(1:s0))
+            ##betastar[ixs] = betastar[ixs] * ((-1)^(1:s0))
             ##betastar[ixs] = sign(runif(n=s0)-0.5)
             betastar = c*betastar/sum(abs(betastar))
             ##betastar[ixs] = 0
