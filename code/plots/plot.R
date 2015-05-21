@@ -1,16 +1,16 @@
-
+library(glmgen)
 ##
 
-#nls = c(100, 200, 300, 400, 500, 600)
-#p = 100
+nls = c(100, 200, 300, 400, 500, 600)
+p = 100
 
-p = 10
-nls = c(30, 40)
+#p = 10
+#nls = c(30, 40)
 
-ntrial = 2
+ntrial = 15
 
-paterr_mat = matrix(0, 3, ntrial)
-prederr_mat = matrix(0, 2, ntrial)
+paterr_mat = array(0, c(3, length(nls), ntrial))
+prederr_mat = array(0, c(2, length(nls), ntrial))
 
 for (it in 1:ntrial){
 
@@ -24,8 +24,18 @@ for (it in 1:ntrial){
         n = nls[ii]        
         out = run_trial(covar, n, p)
 
-        paterr_mat[, it] = out$paterrs
-        prederr_mat[, it] = out$prederrs
+        paterr_mat[, ii, it] = out$paterrs
+        prederr_mat[, ii, it] = out$prederrs
     }
-    
+    save.image(file="tmp.RData")
 }
+
+paterr_ave = apply(paterr_mat, c(1,2), mean)
+prederr_ave = apply(prederr_mat, c(1,2), mean)
+
+paterr_sd = apply(paterr_mat, c(1,2), sd)
+prederr_sd = apply(prederr_mat, c(1,2), sd)
+
+save("paterr_mat", "prederr_mat", "paterr_ave", "prederr_ave", "nls", "p", "paterr_sd", "prederr_sd", file="nls_experiment.RData")
+
+
