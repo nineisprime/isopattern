@@ -1,0 +1,35 @@
+##
+## tf_glm
+##
+## IN: y vector
+##     lambda
+##     tforder integer
+
+## OUT: fhat
+##      X
+##      betahat
+
+tf_mosek <- function(y, lambdas, tforder){
+
+
+
+}
+
+
+create_D <- function(n, tforder){
+
+    i = 0;
+
+    Dfinal = diag(1,n,n);
+    while (i <= tforder){
+
+        i = i + 1;
+        D = matrix(0, n-1-i, n-i);
+        diag(D[, -1]) = 1
+        diag(D[, -(n-i)]) = -1
+
+        Dfinal = D %*% Dfinal;
+    }
+
+    return(Dfinal)
+}

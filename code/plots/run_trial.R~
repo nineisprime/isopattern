@@ -1,0 +1,41 @@
+## IN:
+##   covariance, n, p
+
+## OUT:
+##   pattern recovery accuracy
+
+
+run_trial <- function(covariance, n, p){
+    
+    Z = matrix(rnorm(n*p), nrow=n, ncol=p)
+    X = Z %*% covariance^(1/2)
+    
+    out = additive_monotone_fn(X)
+    y = out$y
+    true_pattern = out$pattern
+    
+    SNR = 4
+    y = y/sd(y)
+    y = y + 0.25*rnorm(n)
+
+
+    ntest = 1000
+    Ztest = matrix(rnorm(ntest*p), nrow=ntest, ncol=p)
+    Xtest = Ztest %*% covariance^(1/2)
+
+    ytest = additive_monotone_fn(Xtest)
+    ytest = ytest/sd(ytest)
+    ytest = ytest + 0.25*rnorm(ntest)
+    
+    lambdas = c(1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2,
+                1e-1, 5e-1, 1)
+    res = cv_pattern(X, Xtest, y, lambdas, opt="min")
+
+    yhat = res$ynew
+    patternhat = res$pattern
+
+    prederr = sum( (ytest - yhat)^2)/ntest
+    paterr = sum(abs(patternhat - true_pattern))
+
+    return(list(prederr = prederr, paterr = paterr))
+}

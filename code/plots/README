@@ -1,0 +1,15 @@
+
+Experiment Outline
+
+Entry point: 
+	run_trial(covariance, n, p)
+ 	- generate simulation data, use random true additive function 
+
+
+Data generation:
+	additive_monotone_fn(X)
+	- used by "run_trial"
+
+Cross-validated pattern estimation
+	cv_pattern
+	- used by "run_trial"

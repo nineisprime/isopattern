@@ -1,0 +1,74 @@
+## IN:
+##   X  (n--by--p) vector
+##
+## OUT:
+##   y  (n) vector, centered
+##  pattern (p) vector, random 0,1
+
+
+additive_monotone_fn <- function(X){
+    n = nrow(X)
+    p = ncol(X)
+
+    tmp = rnorm(p)
+    pattern = rep(0, p)
+    pattern[tmp < 0] = -1
+    pattern[tmp > 0] = 1
+
+    y = rep(0, n)
+    for (j in 1:p){
+        case = sample(1:4, 1)
+        if (case == 1){
+            y = y + linfun(X[ ,j]) * pattern[j]
+        } else if (case == 2){
+            y = y + expfun(X[, j]) * pattern[j]
+        } else if (case == 3){
+            y = y + stepfun(X[, j]) * pattern[j]
+        } else if (case == 4){
+            y = y + twostepfun(X[, j]) * pattern[j]
+        }
+    }
+    return(list(y=y, pattern=pattern))
+}
+
+linfun <- function(x){
+    return(x - mean(x))
+}
+
+
+expfun <- function(x){
+    y = exp(x)
+    y = 4*y/max(y)
+    y = y - mean(y)
+    return(y)
+}
+
+
+stepfun <- function(x){
+    n = length(x)
+    y = rep(0, n)
+
+    ixs = seq(floor(n/2), n)
+    y[ixs] = 1
+
+    return(y - mean(y))
+}
+
+twostepfun <- function(x){
+    n = length(x)
+    y = rep(0, n)
+
+    ixs1 = seq(1, floor(n/5))
+    ixs2 = seq(floor(4*n/5), n)
+    y[ixs1] = -1
+    y[ixs2] = 1
+
+    return(y - mean(y))
+}
+
+
+##
+n = 20
+p = 10
+X = matrix(rnorm(n*p), n, p)
+res = additive_monotone_fn(X)

@@ -1,0 +1,86 @@
+
+
+## IN:
+#   fhats -- (n--by--p) functional values
+#   oldx -- (n--by--p) matrix of old positions
+#   newx -- (nnew--by--p) matrix of new positions
+
+
+## OUT:
+#   fnews -- (nnew--by--p) new functional values
+#   ynew -- (nnew) new total prediction
+
+## linear interpolation between points
+
+eval_additive_tf <- function(fhats, oldx, newx){
+    n = nrow(fhats)
+    p = ncol(fhats)
+
+    nnew = nrow(newx)
+    
+    fnews = matrix(0, nnew, p)
+    
+    for (j in 1:p){
+
+        newx_sorted = sort(newx[, j])
+        newx_ord = order(newx[, j])
+        newx_rank = rank(newx[, j])
+
+        oldx_sorted = sort(oldx[, j])
+        oldx_ord = order(oldx[, j])
+
+        fhat_sorted = fhats[oldx_ord, j]
+
+        new_old_sorted = sort(c(newx_sorted, oldx_sorted))
+        new_ixs = match(newx_sorted, new_old_sorted)
+
+        pre_new_ixs = new_ixs - 1:nnew
+        pre_new_ixs[pre_new_ixs == 0] = 1     #left overflow
+        pre_new_ixs[pre_new_ixs == n] = n-1   #right overflow
+        post_new_ixs = pre_new_ixs + 1
+
+        ## pre_new_ixs[i] is an index i'
+        ## s.t. oldx_sorted[i'] is the largest oldx smaller than
+        ## newx_sorted[i]
+
+        ## likewise with post_new_ixs
+        
+        pre_oldx_sorted = oldx_sorted[pre_new_ixs]
+        post_oldx_sorted = oldx_sorted[post_new_ixs]
+
+        coef_sorted = (newx_sorted - pre_oldx_sorted)/(post_oldx_sorted - pre_oldx_sorted)
+        
+        ## invariant:
+        ## newx_sorted=pre_oldx_sorted + coef_sorted * (post_oldx_sorted - pre_oldx_sorted)
+        ## coef_sorted is in [0,1] for non-overflow elements
+        ## coef_sorted is negative for left overflow, >1 for right overflow
+        
+        pre_fhat_sorted = fhat_sorted[pre_new_ixs]
+        post_fhat_sorted = fhat_sorted[post_new_ixs]
+        
+        fnew_sorted = pre_fhat_sorted + coef_sorted * (post_fhat_sorted - pre_fhat_sorted)
+
+        fnews[, j] = fnew_sorted[newx_rank]
+    }
+
+    return(list(fnews = fnews, ynew = apply(fnews, 1, sum)))
+}
+
+
+## test
+oldx = c(0.1, 0.3, 0.5, 0.9)
+fhat = c(-1, 0, 0, 1)
+
+oldx = oldx[c(3, 1, 4, 2)]
+fhat = fhat[c(3, 1, 4, 2)]
+
+oldx = matrix(oldx, 4, 1)
+fhat = matrix(fhat, 4, 1)
+
+## reorder
+newx = c(0, 0.2, 0.25, 0.3, 0.4, 0.6, 1)
+newx = newx[c(5, 1, 6, 7, 3, 2, 4)]
+
+newx = matrix(newx, 7, 1)
+
+res = eval_additive_tf(fhat, oldx, newx)

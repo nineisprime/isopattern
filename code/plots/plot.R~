@@ -1,0 +1,26 @@
+
+##
+
+nls = c(100, 200, 300, 400, 500, 600)
+p = 100
+
+ntrial = 10
+
+for (it in 1:ntrial){
+    
+    for (ii in 1:length(nls)){
+        n = nls[ii]
+
+        tmp = matrix(rnorm(p*p), p, p)
+        covar = t(tmp) %*% tmp
+        D = diag(diag(covar)^(-1/2))
+        covar = D %*% covar %*% D
+
+        
+        
+        out = run_trial(covar, n, p)
+        
+    }
+
+    
+}
