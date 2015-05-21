@@ -66,13 +66,13 @@ run_trial <- function(covariance, n, p){
 }
 
 ##
-covariance = matrix(c(1, .2, .7,
-                      .2, 1, .1,
-                      .7, .1, 1), 3, 3)
-p = 3
-n = 120
-res = run_trial(covariance, n, p)
-res
+#covariance = matrix(c(1, .2, .7,
+#                      .2, 1, .1,
+#                      .7, .1, 1), 3, 3)
+#p = 3
+#n = 120
+#res = run_trial(covariance, n, p)
+#res
 
 
 ##
