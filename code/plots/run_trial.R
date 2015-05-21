@@ -76,20 +76,20 @@ res
 
 
 ##
-p = 10
-n = 70
-tmp = matrix(rnorm(p*p), p, p)
-covar = t(tmp) %*% tmp
-D = diag(diag(covar)^(-1/2))
-covar = D %*% covar %*% D
-covar = (covar + matrix(1, p, p))/2
-res = run_trial(covar, n, p)
-res
+#p = 10
+#n = 70
+#tmp = matrix(rnorm(p*p), p, p)
+#covar = t(tmp) %*% tmp
+#D = diag(diag(covar)^(-1/2))
+#covar = D %*% covar %*% D
+#covar = (covar + matrix(1, p, p))/2
+#res = run_trial(covar, n, p)
+#res
 
 ##
-p = 50
-n = 100
-covar = toeplitz(0.6^(0:(p-1)))
-res = run_trial(covar, n, p)
-res
+#p = 50
+#n = 100
+#covar = toeplitz(0.6^(0:(p-1)))
+#res = run_trial(covar, n, p)
+#res
 

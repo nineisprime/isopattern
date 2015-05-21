@@ -1,4 +1,5 @@
 library(glmgen)
+source("run_trial.R")
 ##
 
 nls = c(100, 200, 300, 400, 500, 600)
