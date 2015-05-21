@@ -15,6 +15,7 @@ prederr_mat = array(0, c(2, length(nls), ntrial))
 
 for (it in 1:ntrial){
 
+    
     tmp = matrix(rnorm(p*p), p, p)
     covar = t(tmp) %*% tmp
     D = diag(diag(covar)^(-1/2))
@@ -22,6 +23,9 @@ for (it in 1:ntrial){
     covar = (2*covar + matrix(1,p,p))/3
     
     for (ii in 1:length(nls)){
+        print("new run.")
+        print(c(it, ii))
+        
         n = nls[ii]        
         out = run_trial(covar, n, p)
 

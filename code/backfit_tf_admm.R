@@ -85,7 +85,10 @@ backfit_tf_admm <- function(y, X, lambdas, tforder){
         #print(apply(resid^2 / n, 2, sum))
         obj_drops = objs - new_objs
         objs = new_objs
-        print(objs)
+        if (runif(1) > 0.95){
+            print(it)
+            print(objs)
+        }
     }
 
     return(list(fhats = cur_fs, pattern=pattern))
